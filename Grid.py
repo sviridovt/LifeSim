@@ -52,6 +52,11 @@ class Grid:
                 others = self.grid[creature.xPos][creature.yPos].creatures
                 if settings.SEXUAL_REPRODUCTION and len(others) > 0 and creature.age > settings.NON_SEXUAL_AGE_MIN and creature.age < settings.NON_SEXUAL_AGE_MAX:
                     newCreatures.append(Creature(creature.xPos, creature.yPos, False, 1))
+                if len(others) > 0 and creature.food > 1 and settings.SHARE_FOOD:
+                    for other in others:
+                        if other.food <= 1:
+                            other.food += 1
+                            creature.food -= 1
         for creature in self.creatures:
             creature.food -= 1
             if creature.food == 0:
