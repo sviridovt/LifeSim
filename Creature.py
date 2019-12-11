@@ -20,6 +20,7 @@ class Creature:
         self.id = random.randint(0, 1000000)
         self.food = food
         self.age = 0
+        self.bred = settings.MAXIMUM_BABIES
 
 
     def set_new_location(self, xPos, yPos):

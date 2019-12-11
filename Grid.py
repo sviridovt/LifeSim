@@ -19,6 +19,10 @@ class Grid:
 
         self.creaturePopulation = [settings.NUM_CREATURES]
         self.predatorPopulation = [settings.NUM_PREDATORS]
+        self.max_babies = settings.MAXIMUM_BABIES
+        self.max_food = settings.MAXIMUM_FOOD
+        self.min_age = settings.NON_SEXUAL_AGE_MIN
+        self.sex_rep = settings.SEXUAL_REPRODUCTION
 
         self.creatures = [Creature(random.randint(0, settings.X_SIZE - 1), random.randint(0, settings.Y_SIZE - 1)) for x in range(settings.NUM_CREATURES)]
         self.predators = [Creature(random.randint(0, settings.X_SIZE - 1), random.randint(0, settings.Y_SIZE - 1), True) for x in range(settings.NUM_PREDATORS)]
@@ -29,10 +33,12 @@ class Grid:
         """Advances the time by length specified in settings"""
 
         newCreatures = []
+        for creature in self.creatures:
+            creature.bred = settings.MAXIMUM_BABIES
         for i in range(settings.DAY_LENGTH):
             random.shuffle(self.creatures)  # Make sure creatures are randomized, no one creature gets an advantage
             for creature in self.creatures:
-                dir = random.randint(0, 4)
+                dir = random.randint(0, 3)
                 self.remove_creature_from_grid(creature)
                 if dir == 0:
                     creature.xPos = creature.xPos - 1 if creature.xPos - 1 >= 0 else 1
@@ -50,8 +56,9 @@ class Grid:
                     self.grid[creature.xPos][creature.yPos].food = False
                 # others = self.another_creature_on_spot(creature.xPos, creature.yPos)
                 others = self.grid[creature.xPos][creature.yPos].creatures
-                if settings.SEXUAL_REPRODUCTION and len(others) > 0 and creature.age > settings.NON_SEXUAL_AGE_MIN and creature.age < settings.NON_SEXUAL_AGE_MAX:
+                if settings.SEXUAL_REPRODUCTION and len(others) > 0 and creature.age > settings.NON_SEXUAL_AGE_MIN and creature.age < settings.NON_SEXUAL_AGE_MAX and creature.bred > 0:
                     newCreatures.append(Creature(creature.xPos, creature.yPos, False, 1))
+                    creature.bred -= 1
                 if len(others) > 0 and creature.food > 1 and settings.SHARE_FOOD:
                     for other in others:
                         if other.food <= 1:
